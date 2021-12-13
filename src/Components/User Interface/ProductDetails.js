@@ -4,14 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   Button,
-  Card,
   Grid,
   Icon,
   Image,
   Label,
   Rating,
 } from "semantic-ui-react";
-import { selectedProducts } from "../Redux/Actions/ProductActions";
+import { selectedProducts,removeSelectedProducts} from "../Redux/Actions/ProductActions";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -24,12 +23,15 @@ export default function ProductDetails() {
     dispatch(selectedProducts(response.data));
   };
   useEffect(() => {
-    fetchProduct();
+    if (id && id !== "")fetchProduct();
+    return () => {
+      dispatch(removeSelectedProducts())
+    }
   }, []);
   console.log(product);
   return (
     <div className="ui grid container">
-      <Grid celled textAlign="center" verticalAlign="middle">
+      {product.length===0 ? (<h2>Loading.........</h2>): (<Grid celled textAlign="center" verticalAlign="middle">
         <Grid.Row columns={2}>
           <Grid.Column>
             <div className="parent">
@@ -48,17 +50,9 @@ export default function ProductDetails() {
             <div className="molestatore">{product.description}</div>
             <div className="molestatore">
               <Label as="a" image>
-                <img src="/images/avatar/small/stevie.jpg" />
+                <img src="/images/avatar/small/stevie.jpg" alt=""/>
                 {product.category}
               </Label>
-            </div>
-            <div className="molestatore">
-              <Rating
-                icon="star"
-                defaultRating={product.rating?.rate}
-                maxRating={5}
-                disabled
-              />
             </div>
             <div>
               <Button animated="fade" style={{ width: "200px" }}>
@@ -70,7 +64,7 @@ export default function ProductDetails() {
             </div>
           </Grid.Column>
         </Grid.Row>
-      </Grid>
+      </Grid>)}
     </div>
   );
 }
